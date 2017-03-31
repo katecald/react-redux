@@ -1,6 +1,6 @@
 import React, { Component } from "react"
 import store from '../store'
-import setLyrics from "../../redux/action-creators/lyrics"
+import { setLyrics, fetchLyrics } from "../../redux/action-creators/lyrics"
 import Lyrics from '../components/Lyrics';
 import axios from "axios"
 
@@ -18,7 +18,7 @@ export default class LyricsContainer extends Component {
 
     componentDidMount() {
         this.unsubscribe = store.subscribe(() => {
-            this.state = store.getState();
+            this.setState(store.getState())
         })
     }
 
@@ -36,12 +36,9 @@ export default class LyricsContainer extends Component {
 
     handleSubmit(event) {
         event.preventDefault();
+
         if (this.state.artistQuery && this.state.songQuery) {
-            axios.get(`api/lyrics/${this.state.artistQuery}/${this.state.songQuery}`)
-                .then(res => {
-                    const setLyricsAction = setLyrics(res.data.lyric);
-                    store.dispatch(setLyricsAction)
-                });
+            store.dispatch(fetchLyrics(this.state.artistQuery, this.state.songQuery))
         }
     }
 
